@@ -62,7 +62,6 @@ class PathFinderLinkedQ(PathFinder):
             self.buffer.enqueue(generated_word_node) if generated_word_node.word in self else None
         return None
 
-
     @override
     def find_path(self, max_iter: int = 20):
         current_words: LinkedQSimple[ParentNode] = LinkedQSimple()
