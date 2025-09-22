@@ -71,8 +71,6 @@ def main():
         print(kollaMolekyl(s))
 
 
-    for t in tests:
-        print(f"{t!r} -> {kollaMolekyl(t)}")
 
         
 
