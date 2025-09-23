@@ -33,12 +33,19 @@ def readLitenBokstav(q):
 def readNummer(q):
     # Läs första siffran
     d = q.dequeue()
-    if d in ("0", "1"):
+    if d == "0":
         raise molekylFel("För litet tal vid radslutet")
     # Om första siffran är 2–9 → läs resten (valfritt antal siffror)
+    checked = False
     while True:
         nxt = q.peek()
-        if nxt is None or not nxt.isdigit():
+        if d == "1" and nxt is None and not checked: # checked gör att det kollas ifall det är en 1a utan fler siffror första loopen
+            raise molekylFel("För litet tal vid radslutet")
+        if not checked:
+            checked = True
+        if nxt is not None and not nxt.isdigit():
+            raise molekylFel("Bokstav efter siffra")
+        if nxt is None:
             break
         q.dequeue()
 
