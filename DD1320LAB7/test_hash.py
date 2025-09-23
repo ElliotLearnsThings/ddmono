@@ -1,5 +1,5 @@
 #Testar klassen Hashtabell i filen hashfil.py
-from hash_table import HashTable
+from hashtable_2 import Hashtable
 import unittest
 
 #######################################################################
@@ -13,7 +13,7 @@ class TestHashTable(unittest.TestCase):
         namn = "He"
         vikt = 4.002602
         atom = Atom(namn, vikt)
-        hashtabell = HashTable(3)
+        hashtabell = Hashtable(3)
         hashtabell.store(namn, atom)
 
     def test_search(self):
@@ -21,7 +21,7 @@ class TestHashTable(unittest.TestCase):
         namn = "He"
         vikt = 4.002602
         atom = Atom(namn, vikt)
-        hashtabell = HashTable(3)
+        hashtabell = Hashtable(3)
         hashtabell.store(namn, atom)
         x = hashtabell.search(namn)
         self.assertIsInstance(x, Atom)      #search ska returnera en Atom
@@ -188,7 +188,7 @@ def skapaAtomlista():
 def lagraHashtabell(atomlista):
     """Lagrar atomlistans element i en hashtabell"""
     antalElement = len(atomlista)
-    hashtabell = HashTable(antalElement)
+    hashtabell = Hashtable(antalElement)
     for atom in atomlista:
         hashtabell.store(atom.namn, atom)
     return hashtabell
