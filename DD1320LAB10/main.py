@@ -1,13 +1,9 @@
-from molekylobjekt.molekylnummer import Molekylnummer
-from molekylobjekt.molekylstruktur import MolekylStruktur
 from molgrafik import Molgrafik
 
 
 def main():
     mg = Molgrafik()
     mol = input()
-    test = MolekylStruktur()
-    test2 = Molekylnummer()
 
 class GraphNode:
     def __init__(self):

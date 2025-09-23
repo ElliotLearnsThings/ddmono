@@ -1,4 +1,5 @@
 from linkedQ import LinkedQ
+from molekylObjekt import MolekylAtom, MolekylFormel, MolekylGrupp, MolekylMol, MolekylNummer
 
 ATOMER_STR = """H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr
 Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd
@@ -10,24 +11,29 @@ GILTIGA_ATOMER = set(ATOMER_STR.split())
 class molekylFel(Exception):
     pass
 
-def readformel(q):
+def readformel(q) -> MolekylFormel:
     # <formel> ::= <mol>
-    readmol(q, inside_paren=False)
 
-def readmol(q, inside_paren):
+    mol = readmol(q, inside_paren=False)
+    stuktur = MolekylFormel(mol)
+    return stuktur
+
+def readmol(q: LinkedQ, inside_paren) -> MolekylMol:
     # <mol> ::= <group> | <group><mol>
-    readgroup(q)
+
+    group = readgroup(q)
+    mol = None
 
     while True:
         nxt = q.peek()
         if nxt is None:
-            return
+            break
         if nxt == ')':
             if inside_paren:
-                return
+                break
             raise molekylFel("Felaktig gruppstart vid radslutet")
         if nxt == '(' or ('A' <= nxt <= 'Z'):
-            readgroup(q)
+            mol = readmol(q, inside_paren=True)
             continue
         if 'a' <= nxt <= 'z':
             raise molekylFel("Saknad stor bokstav vid radslutet")
@@ -35,8 +41,19 @@ def readmol(q, inside_paren):
             raise molekylFel("Felaktig gruppstart vid radslutet")
         raise molekylFel("Felaktig gruppstart vid radslutet")
 
-def readgroup(q):
+    if mol is not None:
+        mol = MolekylMol(group, mol)
+    else:
+        mol = MolekylMol(group)
+    return mol
+
+def readgroup(q) -> MolekylGrupp:
     # <group> ::= <atom> | <atom><num> | (<mol>)<num>
+
+    atom = None
+    nummer = None
+    mol = None
+
     nxt = q.peek()
     if nxt is None:
         raise molekylFel("Felaktig gruppstart vid radslutet")
@@ -47,21 +64,30 @@ def readgroup(q):
 
     if nxt == '(':
         q.dequeue()  # '('
-        readmol(q, inside_paren=True)
+        mol = readmol(q, inside_paren=True)
         if q.peek() != ')':
             raise molekylFel("Saknad högerparentes vid radslutet")
         q.dequeue()  # ')'
         if q.peek() is None or not q.peek().isdigit():
             raise molekylFel("Saknad siffra vid radslutet")
-        readNummer(q)
-        return
+        nummer = readNummer(q)
+        return MolekylGrupp(None, nummer, mol)
+        
 
-    readatom(q)
+    atom = readatom(q)
     if q.peek() is not None and q.peek().isdigit():
-        readNummer(q)
+        nummer = readNummer(q)
+
+    if nummer is None:
+        return MolekylGrupp(atom, None, None)
+    else:
+        return MolekylGrupp(atom, nummer, None)
+
 
 # Atom-funktioner
-def readatom(q):
+def readatom(q) -> MolekylAtom:
+    # <atom> ::= <LETTER> | <LETTER><letter>
+
     ch = q.peek()
     if ch is None or not ch.isalpha() or not ch.isupper():
         raise molekylFel("Saknad stor bokstav vid radslutet")
@@ -73,6 +99,8 @@ def readatom(q):
 
     if symbol not in GILTIGA_ATOMER:
         raise molekylFel("Okänd atom vid radslutet")
+
+    return MolekylAtom(symbol)
 
 def readStorBokstav(q):
     ch = q.peek()
@@ -87,7 +115,7 @@ def readLitenBokstav(q):
     return q.dequeue()
 
 # Nummer-funktion
-def readNummer(q):
+def readNummer(q) -> MolekylNummer:
     d = q.dequeue()
     if d == "0":
         raise molekylFel("För litet tal vid radslutet")
@@ -104,15 +132,32 @@ def readNummer(q):
         if not checked:
             checked = True
         if nxt is not None and nxt.isdigit():
-            q.dequeue()
+            d += q.dequeue()
             continue
         break
+    return MolekylNummer(d)
 
 def storeMolekyl(molekyl):
     q = LinkedQ()
     for ch in molekyl:
         q.enqueue(ch)
+
     return q
+
+def skapaMolekylTrad(molekyl):
+    q = storeMolekyl(molekyl)
+    try:
+        struktur = readformel(q)
+        struktur.print()
+    except molekylFel as fel:
+        rest_chars = []
+        while True:
+            nxt = q.peek()
+            if nxt is None:
+                break
+            rest_chars.append(q.dequeue())
+        rest = "".join(rest_chars)
+        return f"{fel} {rest}" if rest else f"{fel}"
 
 def kollaMolekyl(molekyl):
     q = storeMolekyl(molekyl)
@@ -134,7 +179,7 @@ def main():
         s = input()
         if s == "#":
             break
-        print(kollaMolekyl(s))
+        print(skapaMolekylTrad(s))
 
 if __name__ == "__main__":
     main()
