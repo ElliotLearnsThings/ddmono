@@ -7,7 +7,6 @@ Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm
 Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Fl Lv"""
 GILTIGA_ATOMER = set(ATOMER_STR.split())
 
-
 class molekylFel(Exception):
     pass
 
@@ -114,10 +113,6 @@ def storeMolekyl(molekyl):
     for ch in molekyl:
         q.enqueue(ch)
     return q
-
-def skapaMolekyl(molekyl):
-    q = storeMolekyl(molekyl)
-    return readformel(q)
 
 def kollaMolekyl(molekyl):
     q = storeMolekyl(molekyl)
