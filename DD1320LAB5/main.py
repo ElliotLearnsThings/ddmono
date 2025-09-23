@@ -69,7 +69,6 @@ class PathFinderLinkedQ(PathFinder):
         current_words.enqueue(main_parent)
 
         i = 0
-
         while i < max_iter:
             i += 1
             # For every char
