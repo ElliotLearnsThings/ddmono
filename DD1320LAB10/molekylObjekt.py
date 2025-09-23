@@ -1,5 +1,5 @@
 from typing import override
-
+from molgrafik import Ruta
 
 class MolekylFormel:
     def __init__(self, mol) -> None:
@@ -7,6 +7,11 @@ class MolekylFormel:
 
     def print(self):
         print(self.mol)
+
+    @property
+    def ruta(self) -> Ruta:
+        ruta = self.mol.ruta
+        return ruta
 
 class MolekylDel:
     def __init__(self) -> None:
@@ -20,7 +25,14 @@ class MolekylMol(MolekylDel):
 
     @override
     def __str__(self) -> str:
-        return f"\n<mol>: <{self.group}> {f" & <{self.mol}>" if self.mol else None}\n" 
+        return f"\n<mol>: <{self.group}> {f" & <{self.mol}>" if self.mol else ""}\n" 
+    
+    @property
+    def ruta(self) -> Ruta:
+        ruta = self.group.ruta
+        if self.mol is not None:
+            ruta.next = self.mol.ruta
+        return ruta
 
 class MolekylGrupp(MolekylDel):
     def __init__(
@@ -34,6 +46,21 @@ class MolekylGrupp(MolekylDel):
         self.nummer: 'MolekylNummer | None' = nummer
         self.mol: 'MolekylMol | None' = mol
 
+    @property
+    def ruta(self) -> Ruta:
+        ruta = Ruta()
+        if self.mol is not None:
+            ruta.num = int(self.nummer.nummer)
+            ruta.down = self.mol.ruta
+            return ruta
+        if self.atom is not None and self.nummer is not None:
+            ruta.atom = self.atom.atom
+            ruta.num = int(self.nummer.nummer)
+            return ruta
+
+        ruta.atom = self.atom.atom
+        return ruta
+
     @override
     def __str__(self) -> str:
         if self.atom is not None and self.nummer is None:
@@ -42,7 +69,7 @@ class MolekylGrupp(MolekylDel):
         """
         if self.atom is not None:
             return f"""
-<group> ::= <{self.atom}><{self.nummer}> & (<mol>)<num>
+<group> ::= <{self.atom}><{self.nummer}>
         """
         return f"""
 <group> ::=  (<{self.mol}>)<{self.nummer}>

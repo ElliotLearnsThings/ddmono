@@ -1,5 +1,6 @@
 from linkedQ import LinkedQ
 from molekylObjekt import MolekylAtom, MolekylFormel, MolekylGrupp, MolekylMol, MolekylNummer
+from molgrafik import Molgrafik, Ruta
 
 ATOMER_STR = """H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr
 Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd
@@ -148,7 +149,8 @@ def skapaMolekylTrad(molekyl):
     q = storeMolekyl(molekyl)
     try:
         struktur = readformel(q)
-        struktur.print()
+        return struktur
+        #struktur.print()
     except molekylFel as fel:
         rest_chars = []
         while True:
@@ -175,14 +177,16 @@ def kollaMolekyl(molekyl):
         return f"{fel} {rest}" if rest else f"{fel}"
 
 def main():
-    while True:
-        s = input()
-        if s == "#":
-            break
-        print(skapaMolekylTrad(s))
+    mg = Molgrafik()
+
+    s = input()
+    tr = skapaMolekylTrad(s)
+    mg.show(tr.ruta)
 
 if __name__ == "__main__":
     main()
+
+
 
 
 """
