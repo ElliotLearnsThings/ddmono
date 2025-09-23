@@ -1,4 +1,4 @@
-class MolekylStruktur:
+class MolekylFormel:
     def __init__(self) -> None:
         self.groups: 'list[MolekylDel]' = []
 
@@ -15,6 +15,18 @@ class MolekylMol(MolekylDel):
         self.group: 'MolekylGrupp' = group
         self.mol: 'MolekylMol | None' = mol
 
+class MolekylGrupp(MolekylDel):
+    def __init__(
+            self,
+            atom: 'MolekylAtom | None' = None,
+            nummer: 'MolekylNummer | None' = None,
+            mol: 'MolekylMol | None' = None
+            ) -> None:
+        super().__init__()
+        self.atom: 'MolekylAtom | None' = atom
+        self.nummer: 'MolekylNummer | None' = nummer
+        self.mol: 'MolekylMol | None' = mol
+
 class MolekylNummer(MolekylDel):
     def __init__(self, nummer: int) -> None:
         self.nummer: int = nummer
@@ -26,15 +38,4 @@ class MolekylAtom(MolekylDel):
         self.atom: str = atom
         super().__init__()
 
-class MolekylGrupp(MolekylDel):
-    def __init__(
-            self,
-            atom: 'MolekylAtom',
-            nummer: 'MolekylNummer',
-            mol: 'MolekylMol | None' = None
-            ) -> None:
-        super().__init__()
-        self.atom: 'MolekylAtom' = atom
-        self.nummer: 'MolekylNummer' = nummer
-        self.mol: 'MolekylMol | None' = mol
 
