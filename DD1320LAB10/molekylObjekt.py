@@ -1,5 +1,6 @@
 from typing import override
 from molgrafik import Ruta
+from vikter import WEIGHTS
 
 class MolekylFormel:
     def __init__(self, mol) -> None:
@@ -12,6 +13,11 @@ class MolekylFormel:
     def ruta(self) -> Ruta:
         ruta = self.mol.ruta
         return ruta
+
+    @property
+    def vikt(self) -> float:
+        return self.mol.vikt()
+
 
 class MolekylDel:
     def __init__(self) -> None:
@@ -33,6 +39,13 @@ class MolekylMol(MolekylDel):
         if self.mol is not None:
             ruta.next = self.mol.ruta
         return ruta
+
+    def vikt(self) -> float:
+        sum = 0
+        sum += self.group.vikt()
+        if self.mol is not None:
+            sum += self.mol.vikt()
+        return sum
 
 class MolekylGrupp(MolekylDel):
     def __init__(
@@ -75,25 +88,49 @@ class MolekylGrupp(MolekylDel):
 <group> ::=  (<{self.mol}>)<{self.nummer}>
         """
 
+    def vikt(self) -> float:
+        sum = 0
+        if self.atom and self.nummer:
+            sum += self.atom.vikt * int(self.nummer.nummer)
+            return sum
+
+        if self.atom:
+            sum += self.atom.vikt
+            return sum
+
+        if self.mol is not None:
+            sum += self.mol.vikt() * int(self.nummer.nummer)
+            return sum
+
+        return sum
+
 class MolekylNummer(MolekylDel):
     def __init__(self, nummer: str) -> None:
         self.nummer: str = nummer
         super().__init__()
 
+    @property
+    def val(self):
+        return int(self.nummer)
+
     @override
     def __str__(self) -> str:
         return f"<num> :== {self.nummer}"
-
 
 class MolekylAtom(MolekylDel):
     def __init__(self, atom: str) -> None:
         self.atom: str = atom
         super().__init__()
 
+    @property
+    def vikt(self):
+        return float(WEIGHTS.search(self.atom).getvikt())
+
     @override
     def __str__(self) -> str:
         if len(self.atom) > 1:
             return f"<atom> :== <{self.atom[0]}{self.atom[1]}>"
         return f"<num> :== <{self.atom[0]}>"
+
 
 

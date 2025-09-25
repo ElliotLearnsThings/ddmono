@@ -145,7 +145,7 @@ def storeMolekyl(molekyl):
 
     return q
 
-def skapaMolekylTrad(molekyl):
+def skapaMolekylTrad(molekyl) -> MolekylFormel:
     q = storeMolekyl(molekyl)
     try:
         struktur = readformel(q)
@@ -180,8 +180,9 @@ def main():
     mg = Molgrafik()
 
     s = input()
-    tr = skapaMolekylTrad(s)
-    mg.show(tr.ruta)
+    tr: MolekylFormel = skapaMolekylTrad(s)
+    print(tr.vikt)
+    #mg.show(tr.ruta)
 
 if __name__ == "__main__":
     main()
